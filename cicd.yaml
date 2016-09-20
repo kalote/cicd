@@ -108,12 +108,6 @@ objects:
           -
             name: https_proxy
             value: 'http://10.144.76.10:8080'
-          -
-            name: http.proxyPort
-            value: '8080'
-          -
-            name: http.proxyHost
-            value: '10.144.76.10'
       type: Source
     triggers:
     - type: ConfigChange
