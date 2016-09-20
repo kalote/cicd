@@ -37,13 +37,7 @@
   <markupFormatter class="hudson.markup.RawHtmlMarkupFormatter" plugin="antisamy-markup-formatter@1.1">
     <disableSyntaxHighlighting>false</disableSyntaxHighlighting>
   </markupFormatter>
-  <jdks>
-    <jdk>
-      <name>JDK-8</name>
-      <home>/usr/lib/jvm/java-1.8.0</home>
-      <properties/>
-    </jdk>
-  </jdks>
+  <jdks />
   <viewsTabBar class="hudson.views.DefaultViewsTabBar"/>
   <myViewsTabBar class="hudson.views.DefaultMyViewsTabBar"/>
   <clouds>

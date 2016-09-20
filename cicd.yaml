@@ -83,16 +83,12 @@ objects:
       to:
         kind: ImageStreamTag
         name: jenkins:latest
-    resources:
-      limits:
-        memory: 1Gi
+    resources: {  }
     source:
       contextDir: jenkins-master
       git:
         uri: https://github.com/kalote/cicd.git
         ref: master
-        httpProxy: http://10.144.76.10:8080
-        httpsProxy: http://10.144.76.10:8080
       secrets: []
       type: Git
     strategy:
@@ -395,9 +391,7 @@ objects:
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 1
-          resources:
-            limits:
-              memory: 512Mi
+          resources: { }
           securityContext:
             capabilities: {}
             privileged: false
