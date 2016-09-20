@@ -7,7 +7,7 @@ labels:
   group: cicd
 metadata:
   annotations:
-    description: Creates the CI/CD infrastructure with Jenkins, Nexus and SonarQube
+    description: Creates the CI/CD infrastructure with Jenins, Nexus and SonarQube
     iconClass: icon-jenkins
     tags: instant-app,jenkins,nexus,cicd
   name: cicd
@@ -96,7 +96,11 @@ objects:
       secrets: []
       type: Git
     strategy:
-      dockerStrategy:
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: jenkins:1
+          namespace: openshift
         env:
           -
             name: http_proxy
@@ -104,7 +108,13 @@ objects:
           -
             name: https_proxy
             value: 'http://10.144.76.10:8080'
-      type: Docker
+          -
+            name: http.proxyPort
+            value: '8080'
+          -
+            name: http.proxyHost
+            value: '10.144.76.10'
+      type: Source
     triggers:
     - type: ConfigChange
     - imageChange: {}
