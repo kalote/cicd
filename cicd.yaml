@@ -63,7 +63,7 @@ objects:
   metadata:
     labels:
       app: jenkins
-    name: jenkins
+    name: jenkinsci
   spec:
     port:
       targetPort: 8080
@@ -193,7 +193,7 @@ objects:
   metadata:
     labels:
       app: nexus
-    name: nexus
+    name: nexusci
   spec:
     port:
       targetPort: web
@@ -307,7 +307,7 @@ objects:
   metadata:
     annotations:
       description: Route for SonarQube's http service.
-    name: sonarqube
+    name: sonarqubeci
     labels:
       app: sonarqube
   spec:
