@@ -9,7 +9,7 @@
           <installers>
             <jenkins.plugins.nodejs.tools.NodeJSInstaller>
               <id>6.6.0</id>
-              <npmPackages>npm gulp bower</npmPackages>
+              <npmPackages>npm gulp bower mocha</npmPackages>
               <npmPackagesRefreshHours>72</npmPackagesRefreshHours>
             </jenkins.plugins.nodejs.tools.NodeJSInstaller>
           </installers>
