@@ -1,0 +1,21 @@
+CREATE (first time)
+
+// create app (deployment + service)
+oc new-app dka-node-app:0.2.2 -n digital-kitchen-asia-prod --name=dka-node-app -e CONTENTO_TOKEN=env.TOKEN -e LOCALS=en -e PORT='8080' -e BODY_LIMIT=100kb -e API_MAX_AGE='5 seconds' -e HTTP_MAX_DURATION='15 seconds' -e BABEL_DISABLE_CACHE='1'
+
+// create route (match the service)
+oc expose svc/dka-node-app -n digital-kitchen-asia-prod --hostname=digital-kitchen-asia-prod.osappext.pink.ap-southeast-1.aws.openpaas.axa-cloud.com
+
+UPDATE (next time)
+
+// get existing name 
+oc get dc -o name
+
+// create app (deployment + service) with new name (avoid creation issue)
+oc new-app dka-node-app:0.3.0 -n digital-kitchen-asia-prod --name=dka-node-app-new -e CONTENTO_TOKEN=env.token -e LOCALS=en -e PORT='8080' -e BODY_LIMIT=100kb -e API_MAX_AGE='5 seconds' -e HTTP_MAX_DURATION='15 seconds' -e BABEL_DISABLE_CACHE='1'
+
+// patch existing route
+oc patch routes dka-node-app -p '{"spec":{"to":{"name":"dka-node-app-new"}}}'
+
+// delete everything related to old container
+oc delete dc,svc -l app=dka-node-app -n digital-kitchen-asia-prod

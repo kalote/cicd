@@ -1,0 +1,75 @@
+node {
+  def nodeHome = tool name: 'node6', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
+  def sonarHome = tool name: 'sonar2.8', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+  env.PATH = "${nodeHome}/bin:${sonarHome}/bin:${env.PATH}"
+
+  stage 'Load functions from GitHub'
+
+  def build, test, cover, openshift
+  fileLoader.withGit('https://github.axa.com/AXA-GS-ASIA/openshift-tools.git', 'master', 'github-axa-token', '') {
+    build = fileLoader.load('jenkins/build');
+    test = fileLoader.load('jenkins/test');
+    cover = fileLoader.load('jenkins/cover');
+    openshift = fileLoader.load('jenkins/openshift');
+  }
+
+  stage 'Cleanup'
+
+  sh """
+    set +x
+    rm -rf node_modules
+    rm -rf .tmp
+  """
+
+  stage 'Checkout'
+
+  checkout scm
+
+  stage 'Build app'
+
+  withCredentials([[
+    $class: 'UsernamePasswordMultiBinding',
+    credentialsId: 'npm-account',
+    usernameVariable: 'EMAIL',
+    passwordVariable: 'KEY'
+  ]]) {
+    build.buildProjectAction('https://axags.artifactoryonline.com/axags/api/npm/virtual-libcontento', env.EMAIL, env.KEY)
+  }
+
+  stage 'Additionnal build steps'
+
+  withCredentials([[
+    $class: 'UsernamePasswordMultiBinding',
+    credentialsId: 'dka-email-account',
+    usernameVariable: 'USER',
+    passwordVariable: 'PWD'
+  ]]) {
+    sh """
+      cp .env.tpl .env
+      npm run build
+    """
+  }
+
+  stage 'Test / Lint'
+
+  withCredentials([[
+    $class: 'UsernamePasswordMultiBinding',
+    credentialsId: 'contento-account-dka',
+    usernameVariable: 'REPO',
+    passwordVariable: 'TOKEN'
+  ]]) {
+    test.testAction('npm run test', 'npm run test-lint', env.REPO, env.TOKEN)
+  }
+
+  stage 'Cover / static analysis'
+
+  cover.coverAction()
+
+  stage 'Build & Deploy on OS'
+
+  openshift.buildAction('dka-node-app', 'digital-kitchen-asia-uat')
+
+  stage 'Tag image'
+
+  openshift.tagAction('dka-node-app', 'digital-kitchen-asia-uat', 'digital-kitchen-asia-uat')
+}
