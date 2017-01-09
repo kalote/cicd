@@ -1,0 +1,70 @@
+{
+  "kind": "Template",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "openpaas-jenkins-deploy"
+  },
+  "labels": {
+    "created-by": "template"
+  },
+  "parameters": [
+    {
+      "description": "The name for the application.",
+      "name": "APPLICATION_NAME",
+      "value": "jenkins-openpaas"
+    },
+
+    {
+      "description": "Docker registry ip:port.",
+      "name": "DOCKER_REGISTRY_ENDPOINT",
+      "value": "172.30.216.47:5000"
+    },
+    {
+      "description": "route",
+      "name": "JENKINS_ROUTE",
+      "value": "jenkins-customer.osappext.pink.ap-southeast-1.aws.openpaas.axa-cloud.com"
+    },
+    {
+      "description": "Volume name.",
+      "name": "VOLUME_NAME",
+      "value": "jenkins-openpaas"
+    },
+    {
+      "description": "http proxy host",
+      "name": "HTTP_PROXY_HOST",
+      "value": "default-http-proxy.pink.ap-southeast-1.aws.openpaas.axa-cloud.com"
+    },
+    {
+      "description": "http proxy port",
+      "name": "HTTP_PROXY_PORT",
+      "value": "8888"
+    },
+    {
+      "description": "https proxy host",
+      "name": "HTTPS_PROXY_HOST",
+      "value": "default-http-proxy.pink.ap-southeast-1.aws.openpaas.axa-cloud.com"
+    },
+    {
+      "description": "https proxy port",
+      "name": "HTTPS_PROXY_PORT",
+      "value": "8888"
+    }
+  ],
+  "objects": [
+    {
+      "kind": "ImageStream",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${APPLICATION_NAME}",
+        "creationTimestamp": null,
+        "labels": {
+          "app": "${APPLICATION_NAME}"
+        }
+      },
+      "spec": {"dockerImageRepository":""},
+      "status": {
+        "dockerImageRepository": ""
+      }
+    }
+  ]
+}

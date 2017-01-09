@@ -1,0 +1,220 @@
+{
+  "kind": "Template",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "openpaas-jenkins-deploy"
+  },
+  "labels": {
+    "created-by": "template"
+  },
+  "parameters": [
+    {
+      "description": "The name for the application.",
+      "name": "APPLICATION_NAME",
+      "value": "jenkins-openpaas"
+    },
+
+    {
+      "description": "Docker registry ip:port.",
+      "name": "DOCKER_REGISTRY_ENDPOINT",
+      "value": "172.30.37.22:5000"
+    },
+    {
+      "description": "route",
+      "name": "JENKINS_ROUTE",
+      "value": "jenkins-customer.osappext.pink.eu-central-1.aws.openpaas.axa-cloud.com"
+    },
+    {
+      "description": "http proxy host",
+      "name": "HTTP_PROXY_HOST",
+      "value": "default-http-proxy.pink.eu-central-1.aws.openpaas.axa-cloud.com"
+    },
+    {
+      "description": "http proxy port",
+      "name": "HTTP_PROXY_PORT",
+      "value": "8888"
+    },
+    {
+      "description": "https proxy host",
+      "name": "HTTPS_PROXY_HOST",
+      "value": "default-http-proxy.pink.eu-central-1.aws.openpaas.axa-cloud.com"
+    },
+    {
+      "description": "https proxy port",
+      "name": "HTTPS_PROXY_PORT",
+      "value": "8888"
+    },
+    {
+      "description": "Volume name.",
+      "name": "VOLUME_NAME",
+      "value": "jenkins-openpaas"
+    }
+  ],
+  "objects": [
+    {
+      "kind": "DeploymentConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${APPLICATION_NAME}",
+        "labels": {
+          "app": "${APPLICATION_NAME}"
+        }
+      },
+      "spec": {
+        "strategy": {
+          "resources": {}
+        },
+        "triggers": [
+          {
+            "type": "ConfigChange"
+          },
+          {
+            "type": "ImageChange",
+            "imageChangeParams": {
+              "automatic": true,
+              "containerNames": [
+                "${APPLICATION_NAME}"
+              ],
+              "from": {
+                "kind": "ImageStreamTag",
+                "namespace": "jenkins",
+                "name": "jenkins-openpaas:release"
+              }
+            }
+          }
+        ],
+        "replicas": 1,
+        "selector": {
+          "app": "${APPLICATION_NAME}",
+          "deploymentconfig": "${APPLICATION_NAME}"
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app": "${APPLICATION_NAME}",
+              "deploymentconfig": "${APPLICATION_NAME}"
+            }
+          },
+          "spec": {
+            "volumes": [
+              {
+                "name": "${VOLUME_NAME}-data",
+                "persistentVolumeClaim": {
+                  "claimName": "${VOLUME_NAME}-data"
+                }
+              }
+            ],
+            "containers": [
+              {
+                "name": "${VOLUME_NAME}",
+                "image": "${DOCKER_REGISTRY_ENDPOINT}/jenkins/jenkins-openpaas:release",
+                "env": [
+                  {
+                    "name": "http_proxy_host",
+                    "value": "${HTTP_PROXY_HOST}"
+                  },
+                  {
+                    "name": "http_proxy_port",
+                    "value": "${HTTP_PROXY_PORT}"
+                  },
+                  {
+                    "name": "https_proxy_host",
+                    "value": "${HTTPS_PROXY_HOST}"
+                  },
+                  {
+                    "name": "https_proxy_port",
+                    "value": "${HTTPS_PROXY_PORT}"
+                  }
+                ],
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  },
+                  {
+                    "containerPort": 50000,
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "limits": {
+                    "cpu": "2000m",
+                    "memory": "2Gi"
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "name": "${VOLUME_NAME}-data",
+                    "mountPath": "/var/lib/jenkins"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "status": {}
+    },
+    {
+      "kind": "Service",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${APPLICATION_NAME}",
+        "labels": {
+          "app": "${APPLICATION_NAME}"
+        }
+      },
+      "spec": {
+
+        "ports": [
+          {
+            "name": "8080-tcp",
+            "protocol": "TCP",
+            "port": 8080,
+            "targetPort": 8080,
+            "nodePort": 0
+          },
+          {
+            "name": "50000-tcp",
+            "protocol": "TCP",
+            "port": 50000,
+            "targetPort": 50000,
+            "nodePort": 0
+          }
+        ],
+        "selector": {
+          "app": "${APPLICATION_NAME}",
+          "deploymentconfig": "${APPLICATION_NAME}"
+        }
+
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "kind": "Route",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${APPLICATION_NAME}",
+        "annotations": {
+          "openshift.io/host.generated": "false"
+        },
+        "labels": {
+          "app": "${APPLICATION_NAME}"
+        }
+      },
+      "spec": {
+        "host": "${JENKINS_ROUTE}",
+        "to": {
+          "kind": "Service",
+          "name": "${APPLICATION_NAME}"
+        },
+        "port": {
+          "targetPort": 8080
+        }
+      },
+      "status": {}
+    }
+  ]
+}

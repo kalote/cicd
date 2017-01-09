@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/settings/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+    <localRepository>/var/lib/jenkins/repo</localRepository>
+
+    <!--<mirrors>-->
+        <!--<mirror>-->
+            <!--<id>central.mirror</id>-->
+            <!--<mirrorOf>central</mirrorOf>-->
+            <!--<name>-->
+                <!--Mirror of Central Repository provided by Axa-Tech-->
+            <!--</name>-->
+            <!--<url>http://openpaas-nexus.osappext.pink.eu-central-1.aws.openpaas.axa-cloud.com/content/repositories/central/</url>-->
+        <!--</mirror>-->
+    <!--</mirrors>-->
+
+    <!--<servers>-->
+        <!--<server>-->
+            <!--<id>openpaas-demo-release</id>-->
+            <!--<username>admin</username>-->
+            <!--<password>password</password>-->
+        <!--</server>-->
+        <!--<server>-->
+            <!--<id>openpaas-demo-snapshot</id>-->
+            <!--<username>admin</username>-->
+            <!--<password>password</password>-->
+        <!--</server>-->
+    <!--</servers>-->
+
+    <proxies>
+
+        <proxy>
+            <id>proxy-http</id>
+            <active>true</active>
+            <protocol>http</protocol>
+            <host>{{HTTP_PROXY_HOST}}</host>
+            <port>{{HTTP_PROXY_PORT}}</port>
+
+        </proxy>
+        <proxy>
+            <id>proxy-https</id>
+            <active>true</active>
+            <protocol>http</protocol>
+            <host>{{HTTPS_PROXY_HOST}}</host>
+            <port>{{HTTPS_PROXY_PORT}}</port>
+        </proxy>
+
+    </proxies>
+
+    <profiles>
+
+        <!-- Configure the JBoss GA Maven repository -->
+        <profile>
+            <id>jboss-ga-repository</id>
+            <repositories>
+                <repository>
+                    <id>jboss-ga-repository</id>
+                    <url>http://maven.repository.redhat.com/techpreview/all</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>jboss-ga-plugin-repository</id>
+                    <url>http://maven.repository.redhat.com/techpreview/all</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+        <!-- Configure the JBoss Early Access Maven repository -->
+        <profile>
+            <id>jboss-earlyaccess-repository</id>
+            <repositories>
+                <repository>
+                    <id>jboss-earlyaccess-repository</id>
+                    <url>http://maven.repository.redhat.com/earlyaccess/all/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>jboss-earlyaccess-plugin-repository</id>
+                    <url>http://maven.repository.redhat.com/earlyaccess/all/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+
+    </profiles>
+
+    <activeProfiles>
+        <!-- Optionally, make the repositories active by default -->
+        <activeProfile>jboss-ga-repository</activeProfile>
+        <activeProfile>jboss-earlyaccess-repository</activeProfile>
+    </activeProfiles>
+
+
+</settings>
