@@ -11,6 +11,7 @@ source /usr/local/bin/kube-slave-common.sh
 
 image_config_dir="/opt/openshift/configuration"
 image_config_path="${image_config_dir}/config.xml"
+config_file_exist="/var/lib/jenkins/config.xml"
 
 # set the right proxy (axa-tech-ch)
 echo "replace the placeholder in the settings.xml for maven"
@@ -19,9 +20,10 @@ sed "s|{{HTTP_PROXY_PORT}}|$http_proxy_port|" -i /opt/axatech/apache-maven/apach
 sed "s|{{HTTPS_PROXY_HOST}}|$https_proxy_host|" -i /opt/axatech/apache-maven/apache-maven-3.3.3/conf/settings.xml
 sed "s|{{HTTPS_PROXY_PORT}}|$https_proxy_port|" -i /opt/axatech/apache-maven/apache-maven-3.3.3/conf/settings.xml
 
-echo "replace the config file: ${image_config_path} (axa-tech-ch)"
-cp ${image_config_path} /var/lib/jenkins/config.xml
-echo "exchange the 'config.xml'"
+if [ ! -f "${config_file_exist}" ]; then
+  echo "replace the config file: ${image_config_path} (axa-tech-ch)"
+  cp ${image_config_path} /var/lib/jenkins/config.xml
+fi
 
 echo "PROXY Settings"
 export NO_PROXY=localhost,127.0.0.0/8,10.94.0.0/15,10.96.0.0/16,10.1.2.0/24,192.168.0.0/24,172.30.23.108,172.30.0.1,172.30.38.197,.oc.intraxa,.svc.cluster.local,169.254.169.254,.internal,osconsole-int.pink.ap-southeast-1.aws.openpaas.axa-cloud.com,172.30.78.75

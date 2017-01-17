@@ -22,8 +22,6 @@ RUN ln -s $((readlink -f $(which javac ))| sed "s:bin/javac::") /usr/lib/jvm/axa
 
 #- files
 COPY resources/ /tmp/resources/
-COPY plugins/ /tmp/plugins/
-RUN chmod 777 /tmp/plugins/*
 RUN chmod 777 /tmp/resources/*.sh
 RUN /tmp/resources/setup-jenkins.sh
 
